@@ -1,0 +1,56 @@
+﻿@inherits LayoutComponentBase
+
+@if (user == null)
+{
+    <p style="font-size:larger"><em>Loading...</em></p>
+}
+else
+{
+<Layout SideWidth="0" IsPage="true" ShowGotoTop="true" ShowCollapseBar="true"
+        IsFullSide="@IsFullSide" IsFixedHeader="@IsFixedHeader" IsFixedFooter="@IsFixedFooter" ShowFooter="@ShowFooter"
+        TabDefaultUrl="./CRDReport" Menus="@Menus" UseTabSet="@UseTabSet" AdditionalAssemblies="new[] { GetType().Assembly }" class="@Theme">
+    <Header>
+        <span class="ms-3 flex-sm-fill d-none d-sm-block">Customer Requirement Document</span>
+        <div class="flex-fill d-sm-none">
+        </div>
+        <Logout ImageUrl="_content/BootstrapBlazorCRD.Shared/images/Argo.png" DisplayName="@UserName" UserName="@Roles" PrefixDisplayNameText="Welcome " PrefixUserNameText="Roles:">
+            <LinkTemplate>
+                <a href="./Logout">
+                    <i class="fa-solid fa-key"></i><span>ReLogin</span>
+                </a>
+            </LinkTemplate>
+        </Logout>
+    </Header>
+    <Side>
+        <div class="layout-banner">
+                <img class="layout-logo" src="_content/BootstrapBlazorCRD.Shared/images/brand.png" data-toggle="tooltip" data-placement="right" title="@AppVersion" />
+            <div class="layout-title">
+                    <span>CRD 2.2</span>
+            </div>
+        </div>
+        <div class="layout-user">
+            <img class="layout-avatar" src="_content/BootstrapBlazorCRD.Shared/images/Argo-C.png">
+            <div class="layout-title">
+                <span>@UserName</span>
+            </div>
+            <div class="layout-user-state"></div>
+        </div>
+    </Side>
+    <Main>
+        <CascadingValue Value="this" IsFixed="true">
+            @Body            
+        </CascadingValue>
+    </Main>
+    <Footer>
+        <div class="text-center flex-fill">
+            <a class="page-layout-demo-footer-link">&copy; @DateTime.Now.Year.ToString() - Quanta Computer lnc. All Rights Reserved.</a>
+        </div>
+    </Footer>
+    <NotAuthorized>
+            <BootstrapBlazorCRD.Shared.Pages.NoPermission />
+    </NotAuthorized>
+    <NotFound>
+        <p>Sorry, there's nothing at this url address.</p>
+    </NotFound>
+</Layout>
+}

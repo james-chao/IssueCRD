@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="logs\**" />
+    <Content Remove="logs\**" />
+    <EmbeddedResource Remove="logs\**" />
+    <None Remove="logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Auth\ExternalAuthStateProvider.cs" />
+    <Compile Remove="Auth\JwtHelpers.cs" />
+    <Compile Remove="Pages\TableDemo.razor.cs" />
+    <Compile Remove="Pages\Users.razor.cs" />
+    <Compile Remove="Service\SAPAdapter.cs" />
+    <Compile Remove="Service\SpinnerHandler.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\L11Info.razor" />
+    <Content Remove="Pages\Login.razor" />
+    <Content Remove="Pages\TableDemo.razor" />
+    <Content Remove="Pages\Users.razor" />
+    <Content Remove="Pages\VersionInfo.razor" />
+    <Content Remove="Shared\Widget.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
+    <PackageReference Include="BootstrapBlazor" Version="8.1.7" />
+    <PackageReference Include="Longbow.Logging" Version="8.0.0" />
+    <PackageReference Include="MailKit" Version="4.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.DirectoryServices" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

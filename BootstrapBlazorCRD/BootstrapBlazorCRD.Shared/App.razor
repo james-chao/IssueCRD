@@ -1,0 +1,20 @@
+﻿<BootstrapBlazorRoot>
+    <CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(MainLayout).Assembly">
+            <Found Context="routeData">
+                <PageTitle>Customer Requirement Document</PageTitle>
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                    <NotAuthorized>
+                        <BootstrapBlazorCRD.Shared.Pages.NoPermission />
+                    </NotAuthorized>
+                </AuthorizeRouteView>
+            </Found>
+            <NotFound>
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p>Sorry, there's nothing at this url address.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CascadingAuthenticationState>
+</BootstrapBlazorRoot>

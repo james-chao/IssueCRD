@@ -1,0 +1,129 @@
+﻿@page "/Admin"
+@attribute [Authorize(Roles = "ADMIN")]
+@attribute [TabItemOption(Text = "User Admin", Icon = "fas fa-user-plus")]
+@using BootstrapBlazorCRD.Shared.Model
+@using BootstrapBlazorCRD.Shared.Data;
+@using MimeKit;
+@using System.Text;
+@using System.Diagnostics.CodeAnalysis;
+@inject IUserService userService     
+@inject SwalService SwalService
+@* @inject IDispatchService<MessageItem> DispatchService *@
+
+<PageTitle>Admin</PageTitle>
+<br />
+<Table TItem="UserInfo" @ref="@TableUsers" IsPagination="true" PageItemsSource="@PageItemsSource"
+       OnQueryAsync="OnQueryAsync" OnSaveAsync="@OnSaveAsync" OnDeleteAsync="@OnDeleteAsync"
+       IsMultipleSelect="true" ShowToolbar="true" TableSize="TableSize.Compact"
+       IsStriped="true" IsBordered="true" ShowLoading="true" AutoGenerateColumns="true"
+       HeaderStyle="TableHeaderStyle.Light" ShowSearch="true" SearchMode="SearchMode.Popup" 
+       ShowExtendButtons="true" ShowLineNo="true" LineNoText="No.">
+</Table>
+
+@code {
+    private static IEnumerable<int> PageItemsSource => new int[] { 10, 20, 40, 80 };
+    private Table<UserInfo>? TableUsers { get; set; }
+    private List<UserInfo>? Users { get; set; }
+    private bool IsRender = false;
+    private string? EditorValue { get; set; }
+    private string? CurrentUser { get; set; }
+
+    [CascadingParameter]
+    [NotNull]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();     
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender || IsRender)
+        {
+            CurrentUser = (await AuthenticationStateTask).User?.Identity?.Name;
+            Users = await userService.GetUserListAsync();
+            IsRender = false;
+            await TableUsers!.QueryAsync();
+        }
+    }
+
+    private async Task<QueryData<UserInfo>> OnQueryAsync(QueryPageOptions options)
+    {
+        if (Users!.Count > 0)
+        {
+            IEnumerable<UserInfo> items = Users;
+            var total = items.Count();
+
+            if (options.SearchModel is UserInfo model)
+            {
+                if (!string.IsNullOrEmpty(model.MailAddress))
+                {
+                    items = items.Where(item => item.MailAddress?.Contains(model.MailAddress, StringComparison.OrdinalIgnoreCase) ?? false);
+                }
+            }
+
+            return await Task.FromResult(new QueryData<UserInfo>()
+                {
+                    Items = items.Skip((options.PageIndex - 1) * options.PageItems).Take(options.PageItems).ToList(),
+                    TotalCount = total
+                });
+        }
+        else
+        {
+            return await Task.FromResult(new QueryData<UserInfo>());
+        }
+    }
+
+    private Task<bool> OnSaveAsync(UserInfo user, ItemChangedType itemChangedType)
+    {
+        bool ret = false;
+        user.CreateName = CurrentUser!;
+
+        if (itemChangedType == ItemChangedType.Add) //Add User
+        {
+            StringBuilder sbMailBody = new();
+            List<InternetAddress> mailto = new();
+            EmailDto email = new();
+            ret = userService.AddUserAsync(user).Result;
+
+            if (!ret)
+            {
+                var op = new SwalOption()
+                    {
+                        Category = SwalCategory.Error,
+                        Title = "Edit User",
+                        Content = "Edit User Failed!"
+                    };
+                SwalService.ShowModal(op);
+            }
+        }
+        else //Update User
+        {
+            ret = userService.UpdateUserAsync(user).Result;
+        }
+
+        IsRender = true;
+        StateHasChanged();
+        return Task.FromResult(ret);
+    }
+
+    private Task<bool> OnDeleteAsync(IEnumerable<UserInfo> users) //Delete User
+    {
+        bool ret = false;
+        UserInfo user = new();
+
+        foreach (var item in users)
+        {
+            user = item;
+            userService.DeleteUserAsync(user);
+            Users?.Remove(user);
+            ret = true;
+        }
+
+        IsRender = true;
+        StateHasChanged();
+        return Task.FromResult(ret);
+    }
+}
